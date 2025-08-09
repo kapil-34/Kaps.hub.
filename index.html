@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake Game & Movie Links</title>
+<meta name="description" content="Play the Snake Game online and explore movie links updated regularly.">
+<meta name="keywords" content="snake game, play snake, movie links, online game, free games">
+<style>
+    body { font-family: Arial, sans-serif; background: #111; color: white; margin: 0; }
+    nav { background: #222; padding: 10px; text-align: center; }
+    nav a { color: white; margin: 0 15px; text-decoration: none; font-weight: bold; }
+    nav a:hover { color: lime; }
+    section { display: none; padding: 20px; max-width: 800px; margin: auto; }
+    h1 { color: lime; }
+    canvas { background: black; display: block; margin: 20px auto; border: 2px solid white; }
+    ul { list-style: none; padding: 0; }
+    ul li { padding: 5px 0; }
+    ul li a { color: cyan; text-decoration: none; }
+    ul li a:hover { color: lime; }
+    footer { text-align: center; padding: 10px; color: #aaa; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="#" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('game')">Play Snake</a>
+    <a href="#" onclick="showSection('movies')">Movies</a>
+</nav>
+
+<section id="home">
+    <h1>Welcome</h1>
+    <p>Enjoy our classic Snake Game and check out movie links that are updated regularly.</p>
+</section>
+
+<section id="game">
+    <h1>Snake Game</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+</section>
+
+<section id="movies">
+    <h1>Movie Links</h1>
+    <ul id="movieList">
+        <li><a href="https://www.youtube.com/" target="_blank">Sample Movie Link 1</a></li>
+        <li><a href="https://www.netflix.com/" target="_blank">Sample Movie Link 2</a></li>
+    </ul>
+    <p><small>Edit this file to add more movie links.</small></p>
+</section>
+
+<footer>
+    &copy; 2025 My Snake Game & Movie Links Website
+</footer>
+
+<script>
+// Navigation
+function showSection(id) {
+    document.querySelectorAll('section').forEach(sec => sec.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
+}
+showSection('home');
+
+// Snake Game
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+let box = 20;
+let snake = [{x: 9*box, y: 10*box}];
+let direction;
+let food = {
+    x: Math.floor(Math.random()*20)*box,
+    y: Math.floor(Math.random()*20)*box
+};
+
+document.addEventListener("keydown", event => {
+    if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+    else if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+    else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+    else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+});
+
+function draw() {
+    ctx.clearRect(0, 0, 400, 400);
+
+    // Snake
+    for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = (i === 0) ? "lime" : "green";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    }
+
+    // Food
+    ctx.fillStyle = "red";
+    ctx.fillRect(food.x, food.y, box, box);
+
+    // Move
+    let headX = snake[0].x;
+    let headY = snake[0].y;
+
+    if (direction === "LEFT") headX -= box;
+    if (direction === "UP") headY -= box;
+    if (direction === "RIGHT") headX += box;
+    if (direction === "DOWN") headY += box;
+
+    // Eat food
+    if (headX === food.x && headY === food.y) {
+        food = {
+            x: Math.floor(Math.random()*20)*box,
+            y: Math.floor(Math.random()*20)*box
+        };
+    } else {
+        snake.pop();
+    }
+
+    // Game over
+    let newHead = {x: headX, y: headY};
+    if (headX < 0 || headY < 0 || headX >= 400 || headY >= 400 || collision(newHead, snake)) {
+        clearInterval(game);
+        alert("Game Over!");
+    }
+
+    snake.unshift(newHead);
+}
+
+function collision(head, array) {
+    for (let i = 0; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+let game = setInterval(draw, 100);
+</script>
+
+</body>
+</html>
